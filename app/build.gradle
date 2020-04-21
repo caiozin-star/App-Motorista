@@ -26,4 +26,17 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    // ----------------- DEPENDENCIAS FIRE BASE -----------------
+    implementation 'com.google.firebase:firebase-analytics:17.2.2'
+    implementation 'com.google.firebase:firebase-core:17.0.0'
+    implementation 'com.google.firebase:firebase-auth:18.0.0'
+    implementation 'com.google.firebase:firebase-database:18.0.0'
+
+
+    // ----------------- DEPENDENCIAS SLIDERS -----------------
+    implementation 'io.github.dreierf:material-intro-screen:0.0.6'
+
 }
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'

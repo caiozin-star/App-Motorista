@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "803828472305",
+    "firebase_url": "https://app-motorista-tcc.firebaseio.com",
+    "project_id": "app-motorista-tcc",
+    "storage_bucket": "app-motorista-tcc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:803828472305:android:457e14b97e73fcd2414c50",
+        "android_client_info": {
+          "package_name": "com.souzs.appmotoristatcc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "803828472305-uv6jpbjv9nea1lc6jhlk67hsepsd59he.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.souzs.appmotoristatcc",
+            "certificate_hash": "8bccc9bd35ec4ffa23ed20439de1ccbee1728dee"
+          }
+        },
+        {
+          "client_id": "803828472305-e2iol48168t05l4je5bifgvlr4mrckvh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgUA4zsHVl_GnoTduW-JzN6qbRKPLzeCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "803828472305-e2iol48168t05l4je5bifgvlr4mrckvh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">App Motorista TCC</string>
+
+
+    <string name="grant_permissions">Aceitar Permissões</string>
+    <string name="please_grant_permissions">Para prosseguir é necessário conceder á permissão</string>
+    <string name="ultimo_slide_msg">Realize seu cadastro ou login!</string>
+
 </resources>
