@@ -1,4 +1,4 @@
-package com.souzs.appmotoristatcc.helper;
+package com.souzs.appmotoristatcc.slider_personalizados;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -27,17 +27,12 @@ public class SliderCad extends SlideFragment {
     }
 
     @Override
-    public String cantMoveFurtherErrorMessage() {
-        return getString(R.string.ultimo_slide_msg);
-    }
-
-    @Override
     public int backgroundColor() {
-        return R.color.colorTeste;
+        return R.color.color_background__slider;
     }
 
     @Override
     public int buttonsColor() {
-        return R.color.colorTeste2;
+        return R.color.color_button_slider;
     }
 }

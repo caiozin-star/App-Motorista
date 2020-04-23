@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#A901DB</color>
-    <color name="colorPrimaryDark">#0404B4</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#7CFC00</color>
+    <color name="colorPrimaryDark">#D0F5A9</color>
+    <color name="colorAccent">#000000</color>
 
-    <color name="colorTeste">#81F7BE</color>
-    <color name="colorTeste2">#D8F781</color>
+    <color name="color_background__slider">#87f591</color>
+    <color name="color_button_slider">#128282</color>
+    <color name="color_button_cadlog">#A9F5D0</color>
 
 </resources>

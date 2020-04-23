@@ -1,14 +1,18 @@
 package com.souzs.appmotoristatcc.acticity;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.FloatRange;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.souzs.appmotoristatcc.R;
-import com.souzs.appmotoristatcc.helper.SliderCad;
+import com.souzs.appmotoristatcc.helper.ConfiguracaoFireBase;
+import com.souzs.appmotoristatcc.slider_personalizados.SliderCad;
+import com.souzs.appmotoristatcc.slider_personalizados.SliderIntro;
 
 import io.github.dreierf.materialintroscreen.MaterialIntroActivity;
 import io.github.dreierf.materialintroscreen.MessageButtonBehaviour;
@@ -16,15 +20,33 @@ import io.github.dreierf.materialintroscreen.SlideFragmentBuilder;
 import io.github.dreierf.materialintroscreen.animations.IViewTranslation;
 
 public class MainActivity extends MaterialIntroActivity {
+    private FirebaseAuth auth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
-
         exibirSlider();
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        auth = ConfiguracaoFireBase.getAutenticacao();
+
+        if (auth.getCurrentUser() != null){
+            abrirTelaMapa();
+        }
+    }
+
+    public void abrirTelaMapa(){
+        startActivity(new Intent(this, TelaMapaActivity.class));
+    }
+
     public void abrirTelaCad(View view){
-        Toast.makeText(this, "Clicou botão cad", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(getApplicationContext(), CadastroActivity.class));
+    }
+    public void abrirTelaLogin(View view){
+        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
     }
     private void exibirSlider(){
         enableLastSlideAlphaExitTransition(true);
@@ -37,17 +59,11 @@ public class MainActivity extends MaterialIntroActivity {
                     }
                 });
 
+        addSlide(new SliderIntro());
+
         addSlide(new SlideFragmentBuilder()
-                .backgroundColor(R.color.colorTeste)
-                .buttonsColor(R.color.colorTeste2)
-                .image(R.drawable.slider_motorista_icone)
-                .title("Olá, bem vindo(a) a versão motorista do nosso App \n")
-                .description("Nesse app você irá fornecer a localização do ônibus para vários passageiros," +
-                        " contribindo e facilitando a vida deles ;)")
-                .build());
-        addSlide(new SlideFragmentBuilder()
-                        .backgroundColor(R.color.colorTeste)
-                        .buttonsColor(R.color.colorTeste2)
+                        .backgroundColor(R.color.color_background__slider)
+                        .buttonsColor(R.color.color_button_slider)
                         .image(R.drawable.slide_icone_location)
                         .possiblePermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION})
                         .neededPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION})
