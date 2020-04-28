@@ -20,11 +20,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +34,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.souzs.appmotoristatcc.R;
 import com.souzs.appmotoristatcc.helper.ConfiguracaoFireBase;
 import com.souzs.appmotoristatcc.helper.MotoristaFireBase;
@@ -47,9 +54,11 @@ public class TelaMapaActivity extends AppCompatActivity
     private LatLng local;
 
     private FirebaseAuth auth;
+    private DatabaseReference reference;
+    private MotoristaLogado motoristaLogado;
 
     private Button buttonLinha;
-    private Boolean stt_secao;
+    private Boolean finalizar_secao = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,13 +69,48 @@ public class TelaMapaActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         buttonLinha = findViewById(R.id.buttonIniciarLinha);
-        stt_secao = false;
-
         auth = ConfiguracaoFireBase.getAutenticacao();
+        reference = ConfiguracaoFireBase.getReference();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        verificaSttLinha();
+
+    }
+    private void  verificaSttLinha(){
+        Motorista mL = MotoristaFireBase.getDadosMotoristalLogado();
+
+        final DatabaseReference motoristaL = reference.child("motorista_logado");
+        Query q = motoristaL.orderByChild("idMLogado").equalTo(mL.getId());
+
+        q.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds: dataSnapshot.getChildren()){
+                    motoristaLogado = ds.getValue(MotoristaLogado.class);
+
+                    Log.d("resultado", "onDataChange: " + motoristaLogado.getIdMLogado());
+                    finalizar_secao = false;
+                    switch (motoristaLogado.getSttLinha()){
+                        case MotoristaLogado.STATUS_ONLINE:
+                            buttonLinha.setText("Finalizar Linha");
+                            finalizar_secao = true;
+                            break;
+                        case MotoristaLogado.STATUS_OFF:
+                            buttonLinha.setText("Iniciar Seção");
+                    }
+                    break;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
     }
 
@@ -86,14 +130,27 @@ public class TelaMapaActivity extends AppCompatActivity
 
     }
     public void iniciarMonitoramento(View view){
-        MotoristaLogado motoristaLogado = new MotoristaLogado();
+        if (finalizar_secao){
+            motoristaLogado.setSttLinha(MotoristaLogado.STATUS_OFF);
+            motoristaLogado.deletarMotoristaLogado();
+            finalizar_secao = false;
+            buttonLinha.setText("Iniciar seção");
 
-        Motorista motoristaL = MotoristaFireBase.getDadosMotoristalLogado();
-        motoristaLogado.setLat(String.valueOf(local.latitude));
-        motoristaLogado.setLon(String.valueOf(local.longitude));
-        motoristaLogado.setIdMLogado(motoristaL.getId());
-        motoristaLogado.setNomeLinha(motoristaL.getNomeIdentificacao());
-        motoristaLogado.salvarMotoristaLogado();
+
+        }else {
+            finalizar_secao = true;
+            buttonLinha.setText("Finalizar seção");
+
+            MotoristaLogado motoristaLogado = new MotoristaLogado();
+
+            Motorista motoristaL = MotoristaFireBase.getDadosMotoristalLogado();
+            motoristaLogado.setLat(String.valueOf(local.latitude));
+            motoristaLogado.setLon(String.valueOf(local.longitude));
+            motoristaLogado.setIdMLogado(motoristaL.getId());
+            motoristaLogado.setNomeLinha(motoristaL.getNomeIdentificacao());
+            motoristaLogado.setSttLinha(motoristaLogado.STATUS_ONLINE);
+            motoristaLogado.salvarMotoristaLogado();
+        }
 
     }
 
@@ -114,6 +171,15 @@ public class TelaMapaActivity extends AppCompatActivity
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.usuario)));
 
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(local, 18));
+
+                //CHECAR SE DEU CERTO AQUI
+               if (finalizar_secao){
+                       motoristaLogado.setLat(String.valueOf(lat));
+                       motoristaLogado.setLon(String.valueOf(lon));
+
+                       motoristaLogado.atualizaLocalizacao();
+
+               }
 
             }
 

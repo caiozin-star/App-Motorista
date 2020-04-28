@@ -32,6 +32,13 @@ public class MotoristaFireBase {
 
         return  motorista;
     }
+    public static String getIdMl(){
+        Motorista m = getDadosMotoristalLogado();
+
+        String idMlogado = m.getId();
+
+        return idMlogado;
+    }
 
     public static Boolean atualizarNomeLinha(String nomeLinha){
         try {
