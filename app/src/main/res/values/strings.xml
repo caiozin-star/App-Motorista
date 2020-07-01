@@ -1,19 +1,17 @@
 <resources>
     <string name="app_name">App Motorista TCC</string>
-
-
-    <string name="titulo_tela_cad">Você está quase lá, preencha seus dados...</string>
-    <string name="titulo_tela_log">Seja bem vindo(a) de volta, preencha seus dados...</string>
-    <string name="versoa_app">Versão 1.0.0</string>
-    <string name="titulo_intro_cadlog"> Como pretende fazer parte da nossa família?</string>
-    <string name="titulo_intro1">Olá, seja bem vindo(a) a versão motorista do nosso App</string>
-    <string name="descricao_intro1">Nesse app você irá fornecer a localização do ônibus para vários passageiros,
-         contribundo \n e facilitando a vida deles ;)</string>
-    <string name="grant_permissions">Aceitar Permissões</string>
+    <string name="titulo_intro">Olá, seja bem vindo(a) a versão motorista do nosso App!</string>
+    <string name="descricao">Nele você irá fornecer a localização do ônibus \n para vários passageiros,
+         contribundo e \n facilitando a vida deles ;)</string>
+    <string name="grant_permissions">Para utilizar nosso app, ative seu GPS e \n dê permissão de acesso à \n sua localização!
+    </string>
+    <string name="aviso_internet">Lembre-se! Para utilizar todos nossos recursos é necessário manter uma
+        conexão estável com a internet, faça um bom uso ;)</string>
     <string name="please_grant_permissions">Para prosseguir é necessário conceder á permissão</string>
     <string name="ultimo_slide_msg">Realize seu cadastro ou login!</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_mapa">Map</string>
     <string name="title_activity_tela_mapa">TelaMapaActivity</string>
+    <string name="title_activity_linha">ActivityLinha</string>
 
 </resources>

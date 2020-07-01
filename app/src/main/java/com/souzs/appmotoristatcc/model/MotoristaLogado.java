@@ -16,7 +16,9 @@ public class MotoristaLogado {
     private String lon;
 
 
-    public static final String STATUS_ONLINE = "online";
+    public static final String STATUS_TRANQUILO = "tranquilo";
+    public static final String STATUS_LENTO = "lento";
+    public static final String STATUS_TRAVADO = "travado";
     public static final String STATUS_OFF = "offline";
 
     public MotoristaLogado() {
@@ -48,6 +50,19 @@ public class MotoristaLogado {
 
         atualizaL.updateChildren(obj);
     }
+    public void atualizarStt(String stt){
+        Motorista mL = MotoristaFireBase.getDadosMotoristalLogado();
+        DatabaseReference reference = ConfiguracaoFireBase.getReference();
+        DatabaseReference upLoca = reference.child("motorista_logado");
+
+        DatabaseReference atualizaL = upLoca.child(mL.getId());
+
+        Map obj = new HashMap();
+        obj.put("sttLinha", stt);
+
+        atualizaL.updateChildren(obj);
+    }
+
 
     public String getSttLinha() {
         return sttLinha;

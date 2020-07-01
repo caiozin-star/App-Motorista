@@ -42,6 +42,43 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:803828472305:android:0bd7648cec9227f7414c50",
+        "android_client_info": {
+          "package_name": "com.souzs.apptccpassageiro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "803828472305-b5dls702ifk7bnmv255tkmcup8jsjor9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.souzs.apptccpassageiro",
+            "certificate_hash": "8bccc9bd35ec4ffa23ed20439de1ccbee1728dee"
+          }
+        },
+        {
+          "client_id": "803828472305-e2iol48168t05l4je5bifgvlr4mrckvh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgUA4zsHVl_GnoTduW-JzN6qbRKPLzeCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "803828472305-e2iol48168t05l4je5bifgvlr4mrckvh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

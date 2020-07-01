@@ -33,11 +33,13 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:17.0.0'
     implementation 'com.google.firebase:firebase-auth:18.0.0'
     implementation 'com.google.firebase:firebase-database:18.0.0'
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
 
-
-    // ----------------- DEPENDENCIAS SLIDERS -----------------
-    implementation 'io.github.dreierf:material-intro-screen:0.0.6'
+    implementation 'com.github.f0ris.sweetalert:library:1.6.2'
     implementation 'com.google.android.material:material:1.1.0'
+
+    android.defaultConfig.vectorDrawables.useSupportLibrary = true
+
 
 }
 apply plugin: 'com.android.application'

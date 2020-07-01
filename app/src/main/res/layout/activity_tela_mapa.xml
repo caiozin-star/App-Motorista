@@ -13,22 +13,32 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
+            app:titleTextColor="@android:color/black"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
+
+
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_tela_mapa" />
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_tela_mapa" />
+
     <Button
         android:id="@+id/buttonIniciarLinha"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:onClick="iniciarMonitoramento"
         android:layout_gravity="bottom"
-        android:text="INICAR SEÇÃO" />
-
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/borda_button_cad_linha"
+        android:onClick="iniciarMonitoramento"
+        android:text="INICAR SEÇÃO"
+        android:textStyle="bold" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

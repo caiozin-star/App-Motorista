@@ -2,9 +2,8 @@ package com.souzs.appmotoristatcc.acticity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,21 +16,18 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -42,8 +38,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.souzs.appmotoristatcc.R;
 import com.souzs.appmotoristatcc.helper.ConfiguracaoFireBase;
 import com.souzs.appmotoristatcc.helper.MotoristaFireBase;
+import com.souzs.appmotoristatcc.helper.Permissoes;
 import com.souzs.appmotoristatcc.model.Motorista;
 import com.souzs.appmotoristatcc.model.MotoristaLogado;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class TelaMapaActivity extends AppCompatActivity
         implements OnMapReadyCallback {
@@ -59,25 +58,82 @@ public class TelaMapaActivity extends AppCompatActivity
 
     private Button buttonLinha;
     private Boolean finalizar_secao = false;
+    private String[] p = new String[]{
+      Manifest.permission.ACCESS_FINE_LOCATION
+    };
+    private SweetAlertDialog alertDialog, alertDialogSL, alertDialogLNS, alertDialogIS;
+
+    private String atuN = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tela_mapa);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(MotoristaFireBase.getNomeLinhaAtual());
-        setSupportActionBar(toolbar);
+
+        alertDialogSL = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE);
+        alertDialogLNS = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE);
+        alertDialogIS = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE);
 
         buttonLinha = findViewById(R.id.buttonIniciarLinha);
-        auth = ConfiguracaoFireBase.getAutenticacao();
         reference = ConfiguracaoFireBase.getReference();
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
-        verificaSttLinha();
+        verificaP();
 
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        auth = ConfiguracaoFireBase.getAutenticacao();
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        if (MotoristaFireBase.getNomeLinhaAtual().equals("") ||
+        MotoristaFireBase.getNomeLinhaAtual() == null){
+
+            toolbar.setTitle("Carregando...");
+            setSupportActionBar(toolbar);
+
+        }else {
+            toolbar.setTitle(auth.getCurrentUser().getDisplayName());
+            setSupportActionBar(toolbar);
+        }
+
+    }
+
+    private void  verificaP(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_DENIED) {
+            alertaP();
+
+        } else {
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+
+            verificaSttLinha();
+        }
+    }
+
+
+    private void alertaP(){
+        alertDialog = new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE);
+
+        alertDialog.setTitleText("Oops..");
+        alertDialog.setContentText("Para prosseguir é necessário aceitar as permissões!");
+        alertDialog.setConfirmButtonBackgroundColor(R.color.colorAccent);
+        alertDialog.setConfirmText("Aceita-las!");
+        alertDialog.setCancelable(false);
+        alertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                Permissoes.validarPermissoes(p, TelaMapaActivity.this, 1);
+
+            }
+        });
+        alertDialog.show();
     }
     private void  verificaSttLinha(){
         Motorista mL = MotoristaFireBase.getDadosMotoristalLogado();
@@ -94,12 +150,18 @@ public class TelaMapaActivity extends AppCompatActivity
                     Log.d("resultado", "onDataChange: " + motoristaLogado.getIdMLogado());
                     finalizar_secao = false;
                     switch (motoristaLogado.getSttLinha()){
-                        case MotoristaLogado.STATUS_ONLINE:
-                            buttonLinha.setText("Finalizar Linha");
-                            finalizar_secao = true;
+                        case MotoristaLogado.STATUS_TRANQUILO:
+                            confg();
+                            break;
+                        case MotoristaLogado.STATUS_LENTO:
+                            confg();
+                            break;
+                        case MotoristaLogado.STATUS_TRAVADO:
+                            confg();
                             break;
                         case MotoristaLogado.STATUS_OFF:
                             buttonLinha.setText("Iniciar Seção");
+                            atuN = "finalizada";
                     }
                     break;
                 }
@@ -110,9 +172,31 @@ public class TelaMapaActivity extends AppCompatActivity
 
             }
         });
-
-
     }
+    private void confg(){
+        buttonLinha.setText("Finalizar Linha");
+        finalizar_secao = true;
+        atuN = "iniciada";
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        for (int pR: grantResults){
+            if (pR == PackageManager.PERMISSION_GRANTED){
+
+                SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.map);
+                mapFragment.getMapAsync(this);
+
+                verificaSttLinha();
+                alertDialog.dismiss();
+            } else if (pR == PackageManager.PERMISSION_DENIED){
+
+            }
+        }
+    }
+
 
     /**
      * Manipulates the map once available.
@@ -131,25 +215,63 @@ public class TelaMapaActivity extends AppCompatActivity
     }
     public void iniciarMonitoramento(View view){
         if (finalizar_secao){
-            motoristaLogado.setSttLinha(MotoristaLogado.STATUS_OFF);
-            motoristaLogado.deletarMotoristaLogado();
-            finalizar_secao = false;
-            buttonLinha.setText("Iniciar seção");
-
+            alertDialogSL.setTitleText("Deseja finalizar essa seção?");
+            alertDialogSL.setContentText("Finalizar seção referente a linha: " +MotoristaFireBase.getNomeLinhaAtual() );
+            alertDialogSL.setConfirmText("Finalizar");
+            alertDialogSL.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                @Override
+                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                    motoristaLogado.setSttLinha(MotoristaLogado.STATUS_OFF);
+                    motoristaLogado.deletarMotoristaLogado();
+                    finalizar_secao = false;
+                    atuN = "finalizada";
+                    buttonLinha.setText("Iniciar seção");
+                    alertDialogSL.dismiss();
+                }
+            });
+            alertDialogSL.show();
 
         }else {
-            finalizar_secao = true;
-            buttonLinha.setText("Finalizar seção");
+            if (MotoristaFireBase.getNomeLinhaAtual().equals("") ||
+            MotoristaFireBase.getNomeLinhaAtual() == null){
+                alertDialogLNS.setTitleText("Linha não selecionada!");
+                alertDialogLNS.setContentText("Para iniciar uma linha é necessário escolher tal!");
+                alertDialogLNS.setConfirmText("Escolher Linha");
+                alertDialogLNS.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        startActivity(new Intent(TelaMapaActivity.this, SelectLinhaActivity.class));
+                        finish();
+                    }
+                });
+                alertDialogLNS.show();
 
-            MotoristaLogado motoristaLogado = new MotoristaLogado();
+            }else {
+                alertDialogIS.setTitleText("Iniciar seção?");
+                alertDialogIS.setContentText("Inciar seção referente a linha: " +MotoristaFireBase.getNomeLinhaAtual() );
+                alertDialogIS.setConfirmText("Inciar");
+                alertDialogIS.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
 
-            Motorista motoristaL = MotoristaFireBase.getDadosMotoristalLogado();
-            motoristaLogado.setLat(String.valueOf(local.latitude));
-            motoristaLogado.setLon(String.valueOf(local.longitude));
-            motoristaLogado.setIdMLogado(motoristaL.getId());
-            motoristaLogado.setNomeLinha(motoristaL.getNomeIdentificacao());
-            motoristaLogado.setSttLinha(motoristaLogado.STATUS_ONLINE);
-            motoristaLogado.salvarMotoristaLogado();
+                        finalizar_secao = true;
+                        atuN = "iniciada";
+                        buttonLinha.setText("Finalizar seção");
+
+                        MotoristaLogado motoristaLogado = new MotoristaLogado();
+
+                        Motorista motoristaL = MotoristaFireBase.getDadosMotoristalLogado();
+                        motoristaLogado.setLat(String.valueOf(local.latitude));
+                        motoristaLogado.setLon(String.valueOf(local.longitude));
+                        motoristaLogado.setIdMLogado(motoristaL.getId());
+                        motoristaLogado.setNomeLinha(motoristaL.getNomeIdentificacao());
+                        motoristaLogado.setSttLinha(motoristaLogado.STATUS_TRANQUILO);
+                        motoristaLogado.salvarMotoristaLogado();
+                        alertDialogIS.dismiss();
+                    }
+                });
+                alertDialogIS.show();
+            }
         }
 
     }
@@ -172,7 +294,6 @@ public class TelaMapaActivity extends AppCompatActivity
 
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(local, 18));
 
-                //CHECAR SE DEU CERTO AQUI
                if (finalizar_secao){
                        motoristaLogado.setLat(String.valueOf(lat));
                        motoristaLogado.setLon(String.valueOf(lon));
@@ -209,7 +330,6 @@ public class TelaMapaActivity extends AppCompatActivity
         }
 
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -219,10 +339,9 @@ public class TelaMapaActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_confg){
-            Toast.makeText(this, "Exibir tela para ediatdar dados", Toast.LENGTH_SHORT).show();
-        }else if (item.getItemId() == R.id.menu_sair){
-                auth.signOut();
-                finish();
+            Intent i = new Intent(TelaMapaActivity.this, ConfgActivity.class);
+            i.putExtra("keyS", atuN);
+            startActivity(i);
         }
         return super.onOptionsItemSelected(item);
     }

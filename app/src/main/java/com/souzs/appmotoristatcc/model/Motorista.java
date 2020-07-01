@@ -1,41 +1,23 @@
 package com.souzs.appmotoristatcc.model;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Exclude;
-import com.souzs.appmotoristatcc.helper.ConfiguracaoFireBase;
 
-public class Motorista {
+import java.io.Serializable;
+
+public class Motorista implements Serializable {
     private String id;
     private String nomeIdentificacao;
     private String email;
-    private String senha;
-
-    private String lat;
-    private String log;
+    private String sL;
 
     public Motorista() {
     }
-    public  void salvarMotorista(){
-        DatabaseReference reference = ConfiguracaoFireBase.getReference();
-        DatabaseReference motorista = reference.child("motorista")
-                                        .child(getId());
-        motorista.setValue(this);
+
+    public String getsL() {
+        return sL;
     }
 
-    public String getLat() {
-        return lat;
-    }
-
-    public void setLat(String lat) {
-        this.lat = lat;
-    }
-
-    public String getLog() {
-        return log;
-    }
-
-    public void setLog(String log) {
-        this.log = log;
+    public void setsL(String sL) {
+        this.sL = sL;
     }
 
     public String getId() {
@@ -60,13 +42,5 @@ public class Motorista {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-    @Exclude
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
     }
 }
